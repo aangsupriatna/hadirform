@@ -13,7 +13,7 @@ RUN npm run build
 # ==========================================
 FROM composer:2 AS composer
 WORKDIR /app
-COPY composer*.json ./
+COPY composer.json composer.lock* ./
 COPY app ./app
 COPY bootstrap ./bootstrap
 COPY database ./database
@@ -23,7 +23,8 @@ RUN composer install \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader \
-    --no-scripts
+    --no-scripts \
+    --ignore-platform-reqs
 
 # ==========================================
 # STAGE 3: Final Production Image (PHP 8.4 + Nginx)
