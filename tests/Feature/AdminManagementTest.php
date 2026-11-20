@@ -81,6 +81,24 @@ class AdminManagementTest extends TestCase
         $this->form->update(['current_version_id' => $version->id]);
     }
 
+    public function test_guest_is_redirected_to_login_from_root(): void
+    {
+        $response = $this->get('/');
+        $response->assertRedirect('/login');
+    }
+
+    public function test_authenticated_user_is_redirected_to_dashboard_from_root(): void
+    {
+        $response = $this->actingAs($this->admin)->get('/');
+        $response->assertRedirect('/admin/dashboard');
+    }
+
+    public function test_authenticated_user_is_redirected_to_dashboard_from_login(): void
+    {
+        $response = $this->actingAs($this->admin)->get('/login');
+        $response->assertRedirect('/admin/dashboard');
+    }
+
     public function test_admin_can_access_dashboard(): void
     {
         $response = $this->actingAs($this->admin)->get('/admin/dashboard');
