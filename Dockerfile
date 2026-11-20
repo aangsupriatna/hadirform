@@ -31,32 +31,28 @@ RUN composer install \
 # ==========================================
 FROM php:8.4-fpm-alpine
 
-# Install dependency sistem & Nginx & Supervisor
+# Install Nginx, Supervisor, dan tools dasar
 RUN apk add --no-cache \
     nginx \
     supervisor \
     curl \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    libzip-dev \
-    libxml2-dev \
-    icu-dev \
-    oniguruma-dev \
-    postgresql-dev
+    bash
 
-# Konfigurasi & pasang ekstensi PHP yang dibutuhkan HadirForm
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        pdo_pgsql \
-        pdo_sqlite \
-        gd \
-        zip \
-        bcmath \
-        intl \
-        opcache \
-        pcntl
+# Pasang helper resmi untuk instalasi ekstensi PHP di container Docker
+COPY --from=mlocati/docker-php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+
+# Install ekstensi PHP yang dibutuhkan HadirForm
+# (gd & zip untuk PDF / Excel, pdo untuk MySQL & Postgres, opcache untuk performa)
+RUN install-php-extensions \
+    pdo_mysql \
+    pdo_pgsql \
+    pdo_sqlite \
+    gd \
+    zip \
+    bcmath \
+    intl \
+    opcache \
+    pcntl
 
 # Optimasi PHP untuk produksi
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
@@ -76,9 +72,12 @@ COPY --from=frontend /app/public/build ./public/build
 # Salin binary composer jika diperlukan runtime command di container
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
+# Hapus konfigurasi nginx bawaan Alpine agar tidak konflik, lalu salin milik kita
+RUN rm -f /etc/nginx/http.d/default.conf
+
 # Salin konfigurasi Nginx, Supervisor, dan Entrypoint
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
@@ -89,4 +88,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

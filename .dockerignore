@@ -6,7 +6,7 @@ vendor
 .env.*
 .lerd.local.yaml
 storage/*.key
-storage/logs/*
+storage/logs
 tests
 Dockerfile
 docker-compose.yml
