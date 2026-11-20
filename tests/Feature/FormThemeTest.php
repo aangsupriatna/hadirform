@@ -208,4 +208,44 @@ class FormThemeTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('--theme-primary: #d97706;', false);
     }
+
+    public function test_admin_form_show_displays_latest_version_prominently_with_older_versions_collapsible(): void
+    {
+        $form = Form::create([
+            'organization_id' => $this->org->id,
+            'event_id' => $this->event->id,
+            'title' => 'Form Multi Versi',
+            'public_slug' => 'form-multi-versi',
+            'status' => 'published',
+            'settings_json' => [],
+        ]);
+
+        $v1 = FormVersion::create([
+            'form_id' => $form->id,
+            'version_number' => 1,
+            'schema_json' => ['fields' => []],
+            'published_at' => now()->subDays(2),
+            'published_by' => $this->admin->id,
+            'schema_hash' => hash('sha256', 'v1'),
+        ]);
+
+        $v2 = FormVersion::create([
+            'form_id' => $form->id,
+            'version_number' => 2,
+            'schema_json' => ['fields' => []],
+            'published_at' => now(),
+            'published_by' => $this->admin->id,
+            'schema_hash' => hash('sha256', 'v2'),
+        ]);
+
+        $form->update(['current_version_id' => $v2->id]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.forms.show', $form));
+
+        $response->assertStatus(200);
+        $response->assertSee('Riwayat Versi Formulir');
+        $response->assertSee('Versi 2');
+        $response->assertSee('Aktif');
+        $response->assertSee('Lihat versi sebelumnya (1)');
+    }
 }

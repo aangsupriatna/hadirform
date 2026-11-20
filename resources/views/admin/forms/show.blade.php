@@ -233,23 +233,60 @@
 
                 <!-- Version History -->
                 <div class="border-t border-slate-100 pt-4">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">Riwayat Versi Formulir</h3>
-                    <div class="space-y-2">
-                        @foreach($form->versions as $v)
-                            <div class="flex items-center justify-between text-xs p-2.5 rounded-lg {{ $v->id === $form->current_version_id ? 'bg-indigo-50 border border-indigo-200' : 'bg-slate-50' }}">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-bold text-slate-800">Riwayat Versi Formulir</h3>
+                        @if($form->versions->count() > 1)
+                            <span class="text-2xs text-slate-400 font-medium">Menampilkan versi terbaru (total {{ $form->versions->count() }} versi)</span>
+                        @endif
+                    </div>
+
+                    @php
+                        $latestVersion = $form->currentVersion ?? $form->versions->first();
+                        $olderVersions = $form->versions->where('id', '!=', $latestVersion?->id);
+                    @endphp
+
+                    @if($latestVersion)
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs p-2.5 rounded-lg bg-indigo-50 border border-indigo-200">
                                 <div>
-                                    <span class="font-bold text-slate-800">Versi {{ $v->version_number }}</span>
-                                    <span class="text-slate-400 ml-2 font-mono text-2xs">{{ substr($v->schema_hash, 0, 12) }}...</span>
-                                    @if($v->id === $form->current_version_id)
+                                    <span class="font-bold text-slate-800">Versi {{ $latestVersion->version_number }}</span>
+                                    <span class="text-slate-400 ml-2 font-mono text-2xs">{{ substr($latestVersion->schema_hash, 0, 12) }}...</span>
+                                    @if($latestVersion->id === $form->current_version_id)
                                         <span class="ml-2 px-1.5 py-0.5 bg-indigo-600 text-white rounded text-2xs font-bold">Aktif</span>
                                     @endif
                                 </div>
                                 <div class="text-slate-400">
-                                    {{ $v->published_at?->format('d M Y H:i') }}
+                                    {{ $latestVersion->published_at?->format('d M Y H:i') }}
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+
+                            @if($olderVersions->isNotEmpty())
+                                <details class="group text-xs">
+                                    <summary class="cursor-pointer text-2xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors list-none flex items-center gap-1 pt-1 select-none">
+                                        <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        <span>Lihat versi sebelumnya ({{ $olderVersions->count() }})</span>
+                                    </summary>
+                                    <div class="mt-2 space-y-1.5 pl-3 border-l-2 border-slate-100">
+                                        @foreach($olderVersions as $v)
+                                            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-2xs">
+                                                <div>
+                                                    <span class="font-medium text-slate-700">Versi {{ $v->version_number }}</span>
+                                                    <span class="text-slate-400 ml-2 font-mono">{{ substr($v->schema_hash, 0, 12) }}...</span>
+                                                </div>
+                                                <div class="text-slate-400">
+                                                    {{ $v->published_at?->format('d M Y H:i') }}
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </details>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-xs text-slate-400">Belum ada versi formulir.</p>
+                    @endif
                 </div>
             </div>
         </div>
