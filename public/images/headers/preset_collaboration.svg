@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg_collab" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="50%" stop-color="#312e81" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="indigo_poly" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bg_collab)" />
+  <path d="M0,320 L180,160 L420,260 L680,100 L950,220 L1150,80 L1200,120 L1200,320 Z" fill="url(#indigo_poly)" />
+  <g fill="#c7d2fe" fill-opacity="0.18">
+    <circle cx="120" cy="110" r="14" />
+    <circle cx="200" cy="170" r="10" />
+    <circle cx="1020" cy="110" r="14" />
+    <circle cx="1100" cy="160" r="16" />
+  </g>
+  <text x="600" y="142" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" letter-spacing="-0.5">DISKUSI &amp; KOMUNITAS</text>
+  <text x="600" y="180" text-anchor="middle" fill="#c7d2fe" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="16" letter-spacing="2">COMMUNITY MEETUP &amp; FORUM</text>
+  <rect x="570" y="202" width="60" height="4" rx="2" fill="#818cf8" />
+</svg>

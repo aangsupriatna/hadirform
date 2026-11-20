@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg_celeb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03" />
+      <stop offset="50%" stop-color="#7c2d12" />
+      <stop offset="100%" stop-color="#831843" />
+    </linearGradient>
+    <linearGradient id="coral_amber" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.2" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bg_celeb)" />
+  <path d="M0,320 C200,160 400,280 700,140 C950,20 1100,160 1200,100 L1200,320 Z" fill="url(#coral_amber)" />
+  <g fill="#fed7aa" fill-opacity="0.2">
+    <circle cx="140" cy="80" r="10" />
+    <circle cx="220" cy="140" r="14" />
+    <circle cx="1020" cy="100" r="10" />
+    <circle cx="1080" cy="150" r="15" />
+  </g>
+  <text x="600" y="142" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" letter-spacing="-0.5">GALA &amp; PERAYAAN</text>
+  <text x="600" y="180" text-anchor="middle" fill="#fdba74" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="16" letter-spacing="2">GATHERING, AWARD &amp; CELEBRATION</text>
+  <rect x="570" y="202" width="60" height="4" rx="2" fill="#fb923c" />
+</svg>

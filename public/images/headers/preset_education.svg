@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg_edu" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="60%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+    <linearGradient id="emerald_wave" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="teal_wave" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0f766e" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bg_edu)" />
+  <path d="M-100,320 Q200,80 500,220 T1100,100 T1300,160 L1300,320 Z" fill="url(#teal_wave)" />
+  <path d="M0,320 Q300,150 650,260 T1200,140 L1200,320 Z" fill="url(#emerald_wave)" />
+  <g fill="#a7f3d0" fill-opacity="0.12">
+    <circle cx="150" cy="90" r="40" />
+    <circle cx="1060" cy="100" r="60" />
+  </g>
+  <text x="600" y="142" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" letter-spacing="-0.5">PELATIHAN &amp; PENDIDIKAN</text>
+  <text x="600" y="180" text-anchor="middle" fill="#a7f3d0" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="16" letter-spacing="2">LEARNING, TRAINING &amp; GROWTH</text>
+  <rect x="570" y="202" width="60" height="4" rx="2" fill="#34d399" />
+</svg>

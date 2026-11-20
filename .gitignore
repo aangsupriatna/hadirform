@@ -1,0 +1,69 @@
+# =============================================================================
+# HADIRFORM - .gitignore
+# =============================================================================
+
+# 1. Environment & Sensitive Credentials (JANGAN DIUPLOAD)
+.env
+.env.backup
+.env.production
+.env.*.local
+.env.lerd_override
+.lerd.local.yaml
+/auth.json
+/storage/*.key
+oauth-*.key
+
+# 2. Package Dependencies (Dipasang via `composer install` & `npm install`)
+/vendor/
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 3. Build & Symlink Artifacts (Dihasilkan saat `npm run build` / `storage:link`)
+/public/build/
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+
+# 4. Runtime Logs & Caches (Data dinamis Laravel)
+*.log
+/storage/logs/*.log
+/storage/pail/
+.phpunit.result.cache
+/.phpunit.cache/
+
+# 5. Local Database & SQLite
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# 6. Generated Exports & Temp Files (Laporan PDF/Excel & file sementara)
+*.pdf
+*.xlsx
+*.xls
+*.csv
+~$*
+
+# 7. IDE & Operating System Files
+.DS_Store
+Thumbs.db
+/.idea/
+/.vscode/
+/.cursor/
+/.codex/
+/.nova/
+/.zed/
+.phpactor.json
+_ide_helper*.php
+.phpstorm.meta.php
+*.swp
+*.swo
+
+# 8. Local Virtual Machines / Dev Tools
+Homestead.json
+Homestead.yaml
