@@ -31,28 +31,36 @@ RUN composer install \
 # ==========================================
 FROM php:8.4-fpm-alpine
 
-# Install Nginx, Supervisor, dan tools dasar
+# Install Nginx, Supervisor, library sistem, dan header untuk ekstensi PHP
 RUN apk add --no-cache \
     nginx \
     supervisor \
     curl \
-    bash
+    bash \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    libpq-dev \
+    icu-dev \
+    oniguruma-dev \
+    sqlite-dev
 
-# Pasang helper resmi untuk instalasi ekstensi PHP di container Docker
-COPY --from=mlocati/docker-php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
-
-# Install ekstensi PHP yang dibutuhkan HadirForm
-# (gd & zip untuk PDF / Excel, pdo untuk MySQL & Postgres, opcache untuk performa)
-RUN install-php-extensions \
-    pdo_mysql \
-    pdo_pgsql \
-    pdo_sqlite \
-    gd \
-    zip \
-    bcmath \
-    intl \
-    opcache \
-    pcntl
+# Konfigurasi & install ekstensi PHP yang dibutuhkan HadirForm
+# (gd untuk PDF/gambar, zip untuk Excel, pdo untuk DB, opcache untuk performa)
+RUN docker-php-ext-configure gd \
+        --with-freetype=/usr/include/ \
+        --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        pdo_pgsql \
+        pdo_sqlite \
+        gd \
+        zip \
+        bcmath \
+        intl \
+        opcache \
+        pcntl
 
 # Optimasi PHP untuk produksi
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
