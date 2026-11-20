@@ -1,0 +1,51 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hadirform-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      APP_NAME: HadirForm
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8080
+      APP_KEY: base64:change_me_with_artisan_key_generate
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: hadirform
+      DB_USERNAME: hadirform_user
+      DB_PASSWORD: secretpassword
+      SESSION_DRIVER: database
+      QUEUE_CONNECTION: database
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - app_storage:/var/www/html/storage/app/public
+
+  db:
+    image: mysql:8.0
+    container_name: hadirform-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: hadirform
+      MYSQL_USER: hadirform_user
+      MYSQL_PASSWORD: secretpassword
+      MYSQL_ROOT_PASSWORD: rootsecretpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootsecretpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  app_storage:
+  db_data:
