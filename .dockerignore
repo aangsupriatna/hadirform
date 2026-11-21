@@ -7,6 +7,7 @@ vendor
 .lerd.local.yaml
 storage/*.key
 storage/logs
+bootstrap/cache/*.php
 tests
 Dockerfile
 docker-compose.yml
