@@ -295,8 +295,17 @@
                             @if($help)<p class="text-xs text-slate-500">{{ $help }}</p>@endif
 
                             <div class="relative bg-slate-900 rounded-2xl overflow-hidden min-h-60 flex flex-col items-center justify-center p-2 text-white shadow-inner">
+                                <!-- Loading State -->
+                                <div x-show="isLoading" class="py-12 text-center space-y-2">
+                                    <svg class="animate-spin h-8 w-8 mx-auto text-indigo-400" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                    </svg>
+                                    <p class="text-xs text-slate-300 font-medium">Menghubungkan kamera...</p>
+                                </div>
+
                                 <!-- 1. Initial State: Camera not open and no photo taken yet -->
-                                <div x-show="!isStreaming && !photoData" class="py-8 text-center space-y-3">
+                                <div x-show="!isLoading && !isStreaming && !photoData" class="py-8 text-center space-y-3">
                                     <div class="w-14 h-14 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
                                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     </div>
@@ -313,7 +322,7 @@
                                 </div>
 
                                 <!-- 2. Video Streaming State (Live Viewfinder) -->
-                                <div x-show="isStreaming" class="w-full relative flex flex-col items-center">
+                                <div x-show="!isLoading && isStreaming" class="w-full relative flex flex-col items-center">
                                     <video x-ref="video" playsinline autoplay muted class="w-full max-h-80 rounded-xl object-cover bg-black"></video>
                                     <div class="mt-3 flex items-center space-x-3 pb-2">
                                         <button type="button" @click="capturePhoto()"
@@ -329,7 +338,7 @@
                                 </div>
 
                                 <!-- 3. Photo Captured State (Review) -->
-                                <div x-show="photoData" class="w-full relative flex flex-col items-center p-2">
+                                <div x-show="!isLoading && photoData" class="w-full relative flex flex-col items-center p-2">
                                     <img :src="photoData" class="w-full max-h-80 rounded-xl object-contain bg-black shadow-md" alt="Hasil Foto Selfie">
                                     <div class="mt-2 text-xs text-emerald-400 font-semibold flex items-center">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -513,16 +522,20 @@
             return {
                 stream: null,
                 isStreaming: false,
+                isLoading: false,
                 photoData: '',
                 errorMsg: '',
 
                 async startCamera() {
                     this.errorMsg = '';
+                    this.isLoading = true;
+                    this.stopCamera();
+
                     try {
                         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                             throw new Error('Akses kamera live tidak didukung di browser ini. Silakan gunakan tombol unggah file foto.');
                         }
-                        this.stream = await navigator.mediaDevices.getUserMedia({
+                        const stream = await navigator.mediaDevices.getUserMedia({
                             video: {
                                 facingMode: 'user',
                                 width: { ideal: 1280 },
@@ -530,27 +543,52 @@
                             },
                             audio: false
                         });
+
+                        this.stream = stream;
                         this.isStreaming = true;
-                        this.$nextTick(() => {
-                            const videoEl = this.$refs.video;
-                            if (videoEl) {
-                                videoEl.srcObject = this.stream;
-                                videoEl.play();
+                        this.isLoading = false;
+
+                        await this.$nextTick();
+                        const videoEl = this.$refs.video;
+                        if (videoEl) {
+                            videoEl.muted = true;
+                            videoEl.srcObject = stream;
+
+                            videoEl.onloadedmetadata = () => {
+                                videoEl.play().catch(e => console.warn('Play error:', e));
+                            };
+
+                            if (videoEl.readyState >= 2) {
+                                videoEl.play().catch(e => console.warn('Play error:', e));
                             }
-                        });
+                        }
                     } catch (err) {
-                        console.error(err);
-                        this.isStreaming = false;
+                        console.error('Camera access error:', err);
+                        this.stopCamera();
                         this.errorMsg = 'Tidak dapat membuka kamera: ' + (err.message || 'Izin kamera ditolak atau kamera sedang digunakan aplikasi lain.');
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
 
                 stopCamera() {
                     if (this.stream) {
-                        this.stream.getTracks().forEach(track => track.stop());
+                        this.stream.getTracks().forEach(track => {
+                            try {
+                                track.stop();
+                            } catch (e) {}
+                        });
                         this.stream = null;
                     }
+                    const videoEl = this.$refs.video;
+                    if (videoEl) {
+                        try {
+                            videoEl.pause();
+                        } catch (e) {}
+                        videoEl.srcObject = null;
+                    }
                     this.isStreaming = false;
+                    this.isLoading = false;
                 },
 
                 capturePhoto() {
@@ -573,11 +611,14 @@
                     this.stopCamera();
                 },
 
-                retakePhoto() {
+                async retakePhoto() {
                     this.photoData = '';
                     const input = document.getElementById('cam_input_' + key);
                     if (input) input.value = '';
-                    this.startCamera();
+
+                    this.stopCamera();
+                    await this.$nextTick();
+                    await this.startCamera();
                 },
 
                 handleFileUpload(e) {
@@ -595,6 +636,7 @@
                         const input = document.getElementById('cam_input_' + key);
                         if (input) input.value = this.photoData;
                         this.errorMsg = '';
+                        this.stopCamera();
                     };
                     reader.readAsDataURL(file);
                 }
