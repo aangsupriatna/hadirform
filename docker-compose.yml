@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
+      - "8443:443"
     environment:
       APP_NAME: HadirForm
       APP_ENV: production
@@ -26,6 +27,7 @@ services:
         condition: service_healthy
     volumes:
       - app_storage:/var/www/html/storage/app/public
+      - ./docker/certs:/etc/nginx/certs:ro
 
   db:
     image: mysql:8.0

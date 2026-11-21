@@ -73,6 +73,9 @@ WORKDIR /var/www/html
 # Salin source code aplikasi
 COPY . .
 
+# Pastikan tidak ada cache lama yang terbawa dari host
+RUN rm -f bootstrap/cache/*.php
+
 # Salin vendor dari Stage 2 & compiled assets dari Stage 1
 COPY --from=composer /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
@@ -83,10 +86,11 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 # Hapus konfigurasi nginx bawaan Alpine agar tidak konflik, lalu salin milik kita
 RUN rm -f /etc/nginx/http.d/default.conf
 
-# Salin konfigurasi Nginx, Supervisor, dan Entrypoint
+# Salin konfigurasi Nginx, Supervisor, Entrypoint, dan SSL certs
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/certs /etc/nginx/certs
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Atur hak akses folder storage dan cache
