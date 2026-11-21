@@ -80,21 +80,24 @@
                          class="absolute z-20 left-0 right-0 mt-2 bg-white rounded-xl border border-slate-200 shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100">
                         <template x-for="item in searchResults" :key="item.id">
                             <div @click="selectAttendee(item)"
-                                 class="p-3 hover:bg-[var(--theme-primary-light)] cursor-pointer transition flex items-center justify-between">
-                                <div>
-                                    <div class="text-sm font-bold text-slate-900" x-text="item.name"></div>
-                                    <div class="text-xs text-slate-500">
+                                 class="p-3 hover:bg-[var(--theme-primary-light)] cursor-pointer transition flex items-center justify-between gap-3">
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-sm font-bold text-slate-900 leading-snug" x-text="item.name"></div>
+                                    <div class="text-xs text-slate-500 mt-0.5">
                                         <span x-text="item.institution || 'Umum'"></span>
                                         <span x-show="item.position" x-text="' &bull; ' + item.position"></span>
                                     </div>
-                                    <div class="text-xs text-slate-500" x-show="item.identifier" x-text="'NIP/ID: ' + item.identifier"></div>
+                                    <div class="text-xs text-slate-500 mt-0.5" x-show="item.identifier" x-text="'NIP/ID: ' + item.identifier"></div>
                                 </div>
-                                <div class="text-right">
+                                <div class="shrink-0 text-right">
                                     <template x-if="item.is_attended">
-                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Sudah Hadir</span>
+                                        <span class="whitespace-nowrap inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Sudah Hadir</span>
                                     </template>
                                     <template x-if="!item.is_attended">
-                                        <span class="px-2.5 py-1 btn-theme rounded-lg text-xs font-semibold shadow-2xs">Pilih &rarr;</span>
+                                        <span class="whitespace-nowrap inline-flex items-center gap-1 px-3 py-1.5 btn-theme rounded-lg text-xs font-semibold shadow-2xs">
+                                            <span>Pilih</span>
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                        </span>
                                     </template>
                                 </div>
                             </div>
